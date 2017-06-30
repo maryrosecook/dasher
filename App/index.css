@@ -1,0 +1,11 @@
+body.noscroll {
+  margin: 0;
+  padding: 0;
+  position: fixed;
+  overflow-y: scroll;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
