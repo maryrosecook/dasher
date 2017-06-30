@@ -1,6 +1,7 @@
 let Coquette = require("./coquette");
 let TouchListener = require("./touch-listener");
 const Rectangle = require("./rectangle");
+const Grid = require("./grid");
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -10,7 +11,8 @@ function Game() {
   coquette.touchListener = new TouchListener(canvas);
   this.c = coquette;
 
-  let rectangle = coquette.entities.create(Rectangle);
+  // let rectangle = coquette.entities.create(Rectangle);
+  let grid = coquette.entities.create(Grid);
 };
 
 Game.prototype.update = function() {
@@ -20,8 +22,7 @@ Game.prototype.update = function() {
 new Game();
 
 
-
-
+// Align rectangles drawn for finger touches to a grid
 // refactor
 // draw rectangle when tap
 // only draw rectangle when finger down
