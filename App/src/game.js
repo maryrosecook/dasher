@@ -21,9 +21,10 @@ new Game();
 
 
 
+
+// refactor
 // draw rectangle when tap
 // only draw rectangle when finger down
-
 // draw rectangle at finger position
 // console.log position on pan
 // find out how to make mouse position update immeditatyl on tap down
