@@ -1,15 +1,14 @@
 function Grid(game, settings) {
   this.game = game;
   this.gridSize = { x: 40, y: 40 };
-  this.activeGridSquareCenter = undefined;
+  this.squares = new UniqueMap((center) => `${center.x},${center.y}`);
 };
 
 Grid.prototype = {
   update: function() {
     if (this.game.c.touchListener.isDown()) {
-      this.activeGridSquareCenter = this._currentGridSquareCenter();
-    } else {
-      this.activeGridSquareCenter = undefined;
+      let center = this._currentGridSquareCenter();
+      this.squares.set(center, true);
     }
   },
 
@@ -27,14 +26,40 @@ Grid.prototype = {
   },
 
   draw: function(screen) {
-    if (this.activeGridSquareCenter) {
-      let pressedSquareCenter = this._currentGridSquareCenter();
+    this.squares.forEach((on, center) => {
       screen.fillStyle = "black";
-      screen.fillRect(pressedSquareCenter.x,
-                      pressedSquareCenter.y,
+      screen.fillRect(center.x,
+                      center.y,
                       this.gridSize.x,
                       this.gridSize.y);
-    }
+    });
+  }
+};
+
+function UniqueMap(generateComparableKey) {
+  this._generateComparableKey = generateComparableKey;
+  this._map = new Map();
+  this._comparableToOriginalKey = {};
+  this.forEach = this._map.forEach.bind(this._map);
+};
+
+UniqueMap.prototype = {
+  get: function(key) {
+    return this._map.get(this._comparableToOriginalKey[this._generateComparableKey(key)]);
+  },
+
+  set: function(key, value) {
+    this._storeKeyValue(key, value);
+    this._updateSize()
+  },
+
+  _storeKeyValue: function(key, value) {
+    this._comparableToOriginalKey[this._generateComparableKey(key)] = key;
+    this._map.set(key, value);
+  },
+
+  _updateSize: function() {
+    this.size = this._map.size;
   }
 };
 

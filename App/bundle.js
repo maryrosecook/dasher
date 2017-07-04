@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -652,9 +652,9 @@ MouseMoveListener.prototype = {
   },
 
   _getAbsoluteMousePosition: function(e) {
-	  if (e.pageX) 	{
+	  if (e.pageX !== undefined) 	{
       return { x: e.pageX, y: e.pageY };
-	  } else if (e.clientX) {
+	  } else if (e.clientX !== undefined) {
       return { x: e.clientX, y: e.clientY };
     }
   }
@@ -937,6 +937,78 @@ Entities.prototype = {
 /* 1 */
 /***/ (function(module, exports) {
 
+function Grid(game, settings) {
+  this.game = game;
+  this.gridSize = { x: 40, y: 40 };
+  this.squares = new UniqueMap((center) => `${center.x},${center.y}`);
+};
+
+Grid.prototype = {
+  update: function() {
+    if (this.game.c.touchListener.isDown()) {
+      let center = this._currentGridSquareCenter();
+      this.squares.set(center, true);
+    }
+  },
+
+  _currentGridSquareCenter: function() {
+    let touchListener = this.game.c.touchListener;
+    let x = Math.floor(touchListener.getPosition().x / this.gridSize.x) *
+        this.gridSize.x;
+    let y = Math.floor(touchListener.getPosition().y / this.gridSize.y) *
+        this.gridSize.y;
+
+    return {
+      x: x,
+      y: y
+    };
+  },
+
+  draw: function(screen) {
+    this.squares.forEach((on, center) => {
+      screen.fillStyle = "black";
+      screen.fillRect(center.x,
+                      center.y,
+                      this.gridSize.x,
+                      this.gridSize.y);
+    });
+  }
+};
+
+function UniqueMap(generateComparableKey) {
+  this._generateComparableKey = generateComparableKey;
+  this._map = new Map();
+  this._comparableToOriginalKey = {};
+  this.forEach = this._map.forEach.bind(this._map);
+};
+
+UniqueMap.prototype = {
+  get: function(key) {
+    return this._map.get(this._comparableToOriginalKey[this._generateComparableKey(key)]);
+  },
+
+  set: function(key, value) {
+    this._storeKeyValue(key, value);
+    this._updateSize()
+  },
+
+  _storeKeyValue: function(key, value) {
+    this._comparableToOriginalKey[this._generateComparableKey(key)] = key;
+    this._map.set(key, value);
+  },
+
+  _updateSize: function() {
+    this.size = this._map.size;
+  }
+};
+
+module.exports = Grid;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
 function Rectangle(game, settings) {
   this.game = game;
   this.center = { x: 10, y: 10 };
@@ -964,10 +1036,10 @@ module.exports = Rectangle;
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-let Hammer = __webpack_require__(4);
+let Hammer = __webpack_require__(5);
 
 function TouchListener(canvas) {
   let hammer = this._setupHammer(canvas);
@@ -1026,13 +1098,13 @@ module.exports = TouchListener;
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 let Coquette = __webpack_require__(0);
-let TouchListener = __webpack_require__(2);
-const Rectangle = __webpack_require__(1);
-const Grid = __webpack_require__(5);
+let TouchListener = __webpack_require__(3);
+const Rectangle = __webpack_require__(2);
+const Grid = __webpack_require__(1);
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -1069,7 +1141,7 @@ new Game();
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
@@ -1081,52 +1153,6 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"undefined"!=typeof module&&module.exports?module.exports=ha:a[c]=ha}(window,document,"Hammer");
 
 
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-function Grid(game, settings) {
-  this.game = game;
-  this.gridSize = { x: 40, y: 40 };
-  this.activeGridSquareCenter = undefined;
-};
-
-Grid.prototype = {
-  update: function() {
-    if (this.game.c.touchListener.isDown()) {
-      this.activeGridSquareCenter = this._currentGridSquareCenter();
-    } else {
-      this.activeGridSquareCenter = undefined;
-    }
-  },
-
-  _currentGridSquareCenter: function() {
-    let touchListener = this.game.c.touchListener;
-    let x = Math.floor(touchListener.getPosition().x / this.gridSize.x) *
-        this.gridSize.x;
-    let y = Math.floor(touchListener.getPosition().y / this.gridSize.y) *
-        this.gridSize.y;
-
-    return {
-      x: x,
-      y: y
-    };
-  },
-
-  draw: function(screen) {
-    if (this.activeGridSquareCenter) {
-      let pressedSquareCenter = this._currentGridSquareCenter();
-      screen.fillStyle = "black";
-      screen.fillRect(pressedSquareCenter.x,
-                      pressedSquareCenter.y,
-                      this.gridSize.x,
-                      this.gridSize.y);
-    }
-  }
-};
-
-module.exports = Grid;
-
-
 /***/ })
 /******/ ]);
+//# sourceMappingURL=bundle.js.map
