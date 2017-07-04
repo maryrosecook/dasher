@@ -1,6 +1,7 @@
 
-get rid of old squares
 
+
+get rid of old squares
 store keyFn(center) => real key, on set use real key in _map, on get lookup real key using keyfn
 on set use real key in _map
 on get lookup real key using keyfn
