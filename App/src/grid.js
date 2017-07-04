@@ -3,7 +3,7 @@ const UniqueMap = require("./unique-map");
 function Grid(game, settings) {
   this.game = game;
   this.gridSize = { x: 40, y: 40 };
-  this.squares = new UniqueMap((center) => `${center.x},${center.y}`);
+  this.squares = new UniqueMap(center => `${center.x},${center.y}`);
 };
 
 Grid.prototype = {
