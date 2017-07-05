@@ -15,14 +15,19 @@ function Game() {
                         window.innerHeight,
                         "white");
   let grid = new Grid();
-  this.c.entities.create(Player, {
+  this.player = this.c.entities.create(Player, {
     grid: grid,
     center: grid.map({ x: 300, y: 300 })
   });
+
   this._addEnemies(grid);
 };
 
 Game.prototype = {
+  update: function() {
+    this.player.handleCollisions(this.c.entities.all(Enemy));
+  },
+
   _addEnemies: function(grid) {
     this.c.entities.create(Enemy, {
       center: grid.map({ x: 100, y: 100 }),

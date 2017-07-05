@@ -1,3 +1,4 @@
+const gridCollider = require("./grid-collider");
 const Line = require("./line");
 
 class Player {
@@ -18,8 +19,16 @@ class Player {
         this.center = this.line.lastPoint();
       }
     } else {
-      this.line.points = [];
+      this.line.clear();
     }
+  }
+
+  handleCollisions(enemies) {
+    enemies
+      .filter(enemy => gridCollider.isColliding(this, enemy))
+      .forEach(enemy => {
+        this.game.c.entities.destroy(enemy);
+      });
   }
 
   draw(screen) {
