@@ -68,7 +68,9 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+let TouchListener = __webpack_require__(3);
 
 var Coquette = function(game, canvasId, width, height, backgroundColor, autoFocus) {
   var canvas = document.getElementById(canvasId);
@@ -427,6 +429,7 @@ var Inputter = function(coquette, canvas, autoFocus) {
 
   this._buttonListener = new ButtonListener(canvas, keyboardReceiver);
   this._mouseMoveListener = new MouseMoveListener(canvas);
+  this.touch = new TouchListener(canvas);
 };
 
 Inputter.prototype = {
@@ -947,13 +950,13 @@ function Grid(game, settings) {
 
 Grid.prototype = {
   update: function() {
-    if (this.game.c.touchListener.isDown()) {
+    if (this.game.c.inputter.touch.isDown()) {
       this.squares.set(this._currentGridSquareCenter(), true);
     }
   },
 
   _currentGridSquareCenter: function() {
-    let touchListener = this.game.c.touchListener;
+    let touchListener = this.game.c.inputter.touch;
     let x = Math.floor(touchListener.getPosition().x / this.gridSize.x) *
         this.gridSize.x;
     let y = Math.floor(touchListener.getPosition().y / this.gridSize.y) *
@@ -1089,18 +1092,12 @@ function Game() {
                         window.innerWidth,
                         window.innerHeight,
                         "white");
-
-  this._addTouchListenerToCoquette(this.c, canvas);
   let grid = this.c.entities.create(Grid);
 };
 
 Game.prototype = {
   update: function() {
 
-  },
-
-  _addTouchListenerToCoquette: function(coquette, canvas) {
-    coquette.touchListener = new TouchListener(canvas);
   }
 };
 

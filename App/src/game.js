@@ -12,18 +12,12 @@ function Game() {
                         window.innerWidth,
                         window.innerHeight,
                         "white");
-
-  this._addTouchListenerToCoquette(this.c, canvas);
   let grid = this.c.entities.create(Grid);
 };
 
 Game.prototype = {
   update: function() {
 
-  },
-
-  _addTouchListenerToCoquette: function(coquette, canvas) {
-    coquette.touchListener = new TouchListener(canvas);
   }
 };
 

@@ -8,13 +8,13 @@ function Grid(game, settings) {
 
 Grid.prototype = {
   update: function() {
-    if (this.game.c.touchListener.isDown()) {
+    if (this.game.c.inputter.touch.isDown()) {
       this.squares.set(this._currentGridSquareCenter(), true);
     }
   },
 
   _currentGridSquareCenter: function() {
-    let touchListener = this.game.c.touchListener;
+    let touchListener = this.game.c.inputter.touch;
     let x = Math.floor(touchListener.getPosition().x / this.gridSize.x) *
         this.gridSize.x;
     let y = Math.floor(touchListener.getPosition().y / this.gridSize.y) *

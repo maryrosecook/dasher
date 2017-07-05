@@ -1,3 +1,5 @@
+let TouchListener = require("./touch-listener");
+
 var Coquette = function(game, canvasId, width, height, backgroundColor, autoFocus) {
   var canvas = document.getElementById(canvasId);
   this.renderer = new Renderer(this, game, canvas, width, height, backgroundColor);
@@ -355,6 +357,7 @@ var Inputter = function(coquette, canvas, autoFocus) {
 
   this._buttonListener = new ButtonListener(canvas, keyboardReceiver);
   this._mouseMoveListener = new MouseMoveListener(canvas);
+  this.touch = new TouchListener(canvas);
 };
 
 Inputter.prototype = {
