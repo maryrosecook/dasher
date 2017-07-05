@@ -7,7 +7,7 @@ class Enemy {
   }
 
   update() {
-    const MOVE_EVERY = 100;
+    const MOVE_EVERY = 500;
 
     if (this.lastMoved + MOVE_EVERY < Date.now()) {
       this.lastMoved = Date.now();
@@ -29,8 +29,8 @@ class Enemy {
 
   draw(screen) {
     screen.fillStyle = "red";
-    screen.fillRect(this.center.x,
-                    this.center.y,
+    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
+                    this.center.y - this.grid.squareSize.y / 2,
                     this.grid.squareSize.x,
                     this.grid.squareSize.y);
   }

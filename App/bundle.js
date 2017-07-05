@@ -944,22 +944,35 @@ function Grid(game, settings) {
   this.game = game;
   this.squareSize = { x: 98, y: 98 };
   this.columns = 10;
+  this.rows = 16;
 };
 
 Grid.prototype = {
   map: function(point) {
     return {
-      x: Math.floor(point.x / this.squareSize.x) * this.squareSize.x,
-      y: Math.floor(point.y / this.squareSize.y) * this.squareSize.y
+      x: (Math.floor(point.x / this.squareSize.x) *
+          this.squareSize.x)
+        + this.squareSize.x / 2,
+      y: (Math.floor(point.y / this.squareSize.y) *
+          this.squareSize.y)
+        + this.squareSize.y / 2,
     };
+  },
+
+  isOffRight: function(point) {
+    return point.x > this.squareSize.x * this.columns;
+  },
+
+  isOffTop: function(point) {
+    return point.y < 0;
   },
 
   moveToOffLeft: function(point) {
     return { x: -this.squareSize.x / 2, y: point.y };
   },
 
-  isOffRight: function(point) {
-    return point.x > this.squareSize.x * this.columns;
+  moveToOffBottom: function(point) {
+    return { x: point.x, y: this.squareSize.y * this.rows };
   },
 
   move: function(point, change) {
@@ -1087,21 +1100,35 @@ function Game() {
                         "white");
   let grid = new Grid();
   this.c.entities.create(Line, { grid: grid });
-
-  this.c.entities.create(Enemy, {
-    center: grid.map({ x: 100, y: 100 }),
-    grid: grid,
-    direction: Enemy.RIGHT
-  });
-
-  this.c.entities.create(Enemy, {
-    center: grid.map({ x: 100, y: 100 }),
-    grid: grid,
-    direction: Enemy.UP
-  });
+  this._addEnemies(grid);
 };
 
 Game.prototype = {
+  _addEnemies: function(grid) {
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 100, y: 100 }),
+      grid: grid,
+      direction: Enemy.RIGHT
+    });
+
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 100, y: 300 }),
+      grid: grid,
+      direction: Enemy.UP
+    });
+
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 400, y: 700 }),
+      grid: grid,
+      direction: Enemy.UP
+    });
+
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 900, y: 1700 }),
+      grid: grid,
+      direction: Enemy.UP
+    });
+  }
 };
 
 
@@ -1193,7 +1220,7 @@ class Enemy {
   }
 
   update() {
-    const MOVE_EVERY = 100;
+    const MOVE_EVERY = 500;
 
     if (this.lastMoved + MOVE_EVERY < Date.now()) {
       this.lastMoved = Date.now();
@@ -1207,12 +1234,16 @@ class Enemy {
     if (this.grid.isOffRight(this.center)) {
       this.center = this.grid.moveToOffLeft(this.center);
     }
+
+    if (this.grid.isOffTop(this.center)) {
+      this.center = this.grid.moveToOffBottom(this.center);
+    }
   }
 
   draw(screen) {
     screen.fillStyle = "red";
-    screen.fillRect(this.center.x,
-                    this.center.y,
+    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
+                    this.center.y - this.grid.squareSize.y / 2,
                     this.grid.squareSize.x,
                     this.grid.squareSize.y);
   }

@@ -16,33 +16,35 @@ function Game() {
                         "white");
   let grid = new Grid();
   this.c.entities.create(Line, { grid: grid });
-
-  this.c.entities.create(Enemy, {
-    center: grid.map({ x: 100, y: 100 }),
-    grid: grid,
-    direction: Enemy.RIGHT
-  });
-
-  this.c.entities.create(Enemy, {
-    center: grid.map({ x: 100, y: 300 }),
-    grid: grid,
-    direction: Enemy.UP
-  });
-
-  this.c.entities.create(Enemy, {
-    center: grid.map({ x: 400, y: 700 }),
-    grid: grid,
-    direction: Enemy.UP
-  });
-
-  this.c.entities.create(Enemy, {
-    center: grid.map({ x: 900, y: 1700 }),
-    grid: grid,
-    direction: Enemy.UP
-  });
+  this._addEnemies(grid);
 };
 
 Game.prototype = {
+  _addEnemies: function(grid) {
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 100, y: 100 }),
+      grid: grid,
+      direction: Enemy.RIGHT
+    });
+
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 100, y: 300 }),
+      grid: grid,
+      direction: Enemy.UP
+    });
+
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 400, y: 700 }),
+      grid: grid,
+      direction: Enemy.UP
+    });
+
+    this.c.entities.create(Enemy, {
+      center: grid.map({ x: 900, y: 1700 }),
+      grid: grid,
+      direction: Enemy.UP
+    });
+  }
 };
 
 

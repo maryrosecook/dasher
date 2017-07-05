@@ -8,8 +8,12 @@ function Grid(game, settings) {
 Grid.prototype = {
   map: function(point) {
     return {
-      x: Math.floor(point.x / this.squareSize.x) * this.squareSize.x,
-      y: Math.floor(point.y / this.squareSize.y) * this.squareSize.y
+      x: (Math.floor(point.x / this.squareSize.x) *
+          this.squareSize.x)
+        + this.squareSize.x / 2,
+      y: (Math.floor(point.y / this.squareSize.y) *
+          this.squareSize.y)
+        + this.squareSize.y / 2,
     };
   },
 
