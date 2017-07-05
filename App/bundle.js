@@ -972,7 +972,10 @@ Grid.prototype = {
   },
 
   moveToOffBottom: function(point) {
-    return { x: point.x, y: this.squareSize.y * this.rows };
+    return {
+      x: point.x,
+      y: (this.squareSize.y * this.rows) - this.squareSize.y / 2
+    };
   },
 
   move: function(point, change) {
@@ -1105,6 +1108,7 @@ function Game() {
 
 Game.prototype = {
   _addEnemies: function(grid) {
+    console.log(grid.map({ x: 900, y: 1700 }))
     this.c.entities.create(Enemy, {
       center: grid.map({ x: 100, y: 100 }),
       grid: grid,

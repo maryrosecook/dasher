@@ -30,7 +30,10 @@ Grid.prototype = {
   },
 
   moveToOffBottom: function(point) {
-    return { x: point.x, y: this.squareSize.y * this.rows };
+    return {
+      x: point.x,
+      y: (this.squareSize.y * this.rows) - this.squareSize.y / 2
+    };
   },
 
   move: function(point, change) {
