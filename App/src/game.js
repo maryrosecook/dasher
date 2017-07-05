@@ -6,17 +6,25 @@ const Grid = require("./grid");
 const CANVAS_SELECTOR_ID = "canvas";
 
 function Game() {
-  let coquette = new Coquette(this, CANVAS_SELECTOR_ID, 400, 400, "white");
   let canvas = document.getElementById(CANVAS_SELECTOR_ID);
-  coquette.touchListener = new TouchListener(canvas);
-  this.c = coquette;
+  this.c = new Coquette(this,
+                        CANVAS_SELECTOR_ID,
+                        window.innerWidth,
+                        window.innerHeight,
+                        "white");
 
-  // let rectangle = coquette.entities.create(Rectangle);
-  let grid = coquette.entities.create(Grid);
+  this._addTouchListenerToCoquette(this.c, canvas);
+  let grid = this.c.entities.create(Grid);
 };
 
-Game.prototype.update = function() {
+Game.prototype = {
+  update: function() {
 
+  },
+
+  _addTouchListenerToCoquette: function(coquette, canvas) {
+    coquette.touchListener = new TouchListener(canvas);
+  }
 };
 
 
