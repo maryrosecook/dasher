@@ -1157,9 +1157,57 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
 
 
 /***/ }),
-/* 6 */,
-/* 7 */
+/* 6 */
 /***/ (function(module, exports) {
+
+function UniqueMap(generateComparableKey) {
+  this._generateComparableKey = generateComparableKey;
+  this._map = new Map();
+  this._comparableToRealKey = {};
+  this.forEach = this._map.forEach.bind(this._map);
+  this.keys = this._map.keys.bind(this._map);
+  this.lastKey = undefined;
+};
+
+UniqueMap.prototype = {
+  get: function(key) {
+    return this._map.get(this._comparableToRealKey[
+      this._generateComparableKey(key)]);
+  },
+
+  set: function(key, value) {
+    this._storeKeyValue(key, value);
+    this._updateSize();
+  },
+
+  _storeKeyValue: function(key, value) {
+    let existingRealKey = this._existingRealKey(key);
+    let realKey = existingRealKey !== undefined ?
+        existingRealKey :
+        key;
+
+    this._comparableToRealKey[this._generateComparableKey(key)]
+      = realKey;
+    this._map.set(realKey, value);
+  },
+
+  _existingRealKey: function(key) {
+    return this._comparableToRealKey[this._generateComparableKey(key)];
+  },
+
+  _updateSize: function() {
+    this.size = this._map.size;
+  }
+};
+
+module.exports = UniqueMap;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const UniqueMap = __webpack_require__(6);
 
 class Line {
   constructor(game, settings) {
@@ -1167,19 +1215,25 @@ class Line {
     this.game = game;
     this.grid = settings.grid;
     this.points = [];
+    this.pointsMap = new UniqueMap((point) => `${point.x},${point.y}`);
   }
 
   addWaypoint(waypoint, playerCenter) {
-    this.points = this.points.concat(
-      this._newPoints(waypoint, playerCenter));
+    let newPoints = this._newPoints(waypoint, playerCenter);
+    newPoints.forEach((point) => {
+      this.pointsMap.set(point, true);
+    });
+
+    this.points = this.points.concat(newPoints);
+    return newPoints.length > 0;
   }
 
   isStarted() {
-    return this.points.length > 0;
+    return this.pointsMap.size > 0;
   }
 
   lastPoint() {
-    return this.points[this.points.length - 1];
+    return Array.from(this.pointsMap.keys())[this.pointsMap.size - 1];
   }
 
   _newPoints(waypoint, playerCenter) {
@@ -1238,12 +1292,12 @@ class Enemy {
   }
 
   update() {
-    if (this.lastMoved + this.moveEvery < Date.now()) {
-      this.lastMoved = Date.now();
-      this.center = this.grid.move(this.center, this.direction);
-    }
+    // if (this.lastMoved + this.moveEvery < Date.now()) {
+    //   this.lastMoved = Date.now();
+    //   this.center = this.grid.move(this.center, this.direction);
+    // }
 
-    this._wrap();
+    // this._wrap();
   }
 
   _wrap() {
@@ -1291,8 +1345,9 @@ class Player {
     if (this.game.c.inputter.touch.isDown()) {
       let touchPosition = this.game.c.inputter.touch.getPosition();
       let gridPosition = this.grid.map(touchPosition);
-      this.line.addWaypoint(gridPosition, this.center);
-      if (this.line.isStarted()) {
+      let werePointsAdded = this.line.addWaypoint(gridPosition,
+                                                  this.center);
+      if (werePointsAdded) {
         this.center = this.line.lastPoint();
       }
     } else {
@@ -1303,9 +1358,9 @@ class Player {
   draw(screen) {
     screen.fillStyle = "#69D2E7";
     screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
-                      this.center.y - this.grid.squareSize.y / 2,
-                      this.grid.squareSize.x,
-                      this.grid.squareSize.y);
+                    this.center.y - this.grid.squareSize.y / 2,
+                    this.grid.squareSize.x,
+                    this.grid.squareSize.y);
   }
 };
 

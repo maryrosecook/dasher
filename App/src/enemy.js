@@ -8,12 +8,12 @@ class Enemy {
   }
 
   update() {
-    if (this.lastMoved + this.moveEvery < Date.now()) {
-      this.lastMoved = Date.now();
-      this.center = this.grid.move(this.center, this.direction);
-    }
+    // if (this.lastMoved + this.moveEvery < Date.now()) {
+    //   this.lastMoved = Date.now();
+    //   this.center = this.grid.move(this.center, this.direction);
+    // }
 
-    this._wrap();
+    // this._wrap();
   }
 
   _wrap() {

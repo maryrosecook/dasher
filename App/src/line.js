@@ -1,22 +1,30 @@
+const UniqueMap = require("./unique-map");
+
 class Line {
   constructor(game, settings) {
     this.zindex = -10;
     this.game = game;
     this.grid = settings.grid;
     this.points = [];
+    this.pointsMap = new UniqueMap((point) => `${point.x},${point.y}`);
   }
 
   addWaypoint(waypoint, playerCenter) {
-    this.points = this.points.concat(
-      this._newPoints(waypoint, playerCenter));
+    let newPoints = this._newPoints(waypoint, playerCenter);
+    newPoints.forEach((point) => {
+      this.pointsMap.set(point, true);
+    });
+
+    this.points = this.points.concat(newPoints);
+    return newPoints.length > 0;
   }
 
   isStarted() {
-    return this.points.length > 0;
+    return this.pointsMap.size > 0;
   }
 
   lastPoint() {
-    return this.points[this.points.length - 1];
+    return Array.from(this.pointsMap.keys())[this.pointsMap.size - 1];
   }
 
   _newPoints(waypoint, playerCenter) {

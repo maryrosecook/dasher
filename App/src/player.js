@@ -12,8 +12,9 @@ class Player {
     if (this.game.c.inputter.touch.isDown()) {
       let touchPosition = this.game.c.inputter.touch.getPosition();
       let gridPosition = this.grid.map(touchPosition);
-      this.line.addWaypoint(gridPosition, this.center);
-      if (this.line.isStarted()) {
+      let werePointsAdded = this.line.addWaypoint(gridPosition,
+                                                  this.center);
+      if (werePointsAdded) {
         this.center = this.line.lastPoint();
       }
     } else {
@@ -24,9 +25,9 @@ class Player {
   draw(screen) {
     screen.fillStyle = "#69D2E7";
     screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
-                      this.center.y - this.grid.squareSize.y / 2,
-                      this.grid.squareSize.x,
-                      this.grid.squareSize.y);
+                    this.center.y - this.grid.squareSize.y / 2,
+                    this.grid.squareSize.x,
+                    this.grid.squareSize.y);
   }
 };
 
