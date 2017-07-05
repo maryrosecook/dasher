@@ -1375,7 +1375,8 @@ class Player {
 
   handleCollisions(enemies) {
     enemies
-      .filter(enemy => gridCollider.isColliding(this, enemy))
+      .filter(enemy =>
+              gridCollider.isColliding(this.center, enemy.center))
       .forEach(enemy => enemy.die());
   }
 
@@ -1396,9 +1397,9 @@ module.exports = Player;
 /***/ (function(module, exports) {
 
 const gridCollider = {
-  isColliding(entity1, entity2) {
-    return entity1.center.x === entity2.center.x &&
-      entity1.center.y === entity2.center.y;
+  isColliding(center1, center2) {
+    return center1.x === center2.x &&
+      center1.y === center2.y;
   }
 };
 

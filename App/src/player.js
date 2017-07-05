@@ -25,7 +25,8 @@ class Player {
 
   handleCollisions(enemies) {
     enemies
-      .filter(enemy => gridCollider.isColliding(this, enemy))
+      .filter(enemy =>
+              gridCollider.isColliding(this.center, enemy.center))
       .forEach(enemy => enemy.die());
   }
 

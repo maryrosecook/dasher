@@ -1,4 +1,5 @@
 
+refactor collider to take centers, not bodies
 let enemy destroy itself
 make player gobble enemies
 don't add existing points to line
