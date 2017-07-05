@@ -1,3 +1,5 @@
+refactor enemy to take movement direction
+wrap enemy at edge of screen
 move enemy right
 Make grid point map method name clearer
 draw a one-block enemy

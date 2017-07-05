@@ -2,13 +2,24 @@ class Enemy {
   constructor(game, settings) {
     this.center = settings.center;
     this.grid = settings.grid;
+    this.direction = settings.direction;
     this.lastMoved = Date.now();
   }
 
   update() {
-    if (this.lastMoved + 1000 < Date.now()) {
+    const MOVE_EVERY = 100;
+
+    if (this.lastMoved + MOVE_EVERY < Date.now()) {
       this.lastMoved = Date.now();
-      this.center.x += this.grid.squareSize.x;
+      this.center = this.grid.move(this.center, this.direction);
+    }
+
+    this._wrap();
+  }
+
+  _wrap() {
+    if (this.grid.isOffRight(this.center)) {
+      this.center = this.grid.moveToOffLeft(this.center);
     }
   }
 
@@ -20,5 +31,10 @@ class Enemy {
                     this.grid.squareSize.y);
   }
 };
+
+Enemy.UP = { x: 0, y: -1 };
+Enemy.DOWN = { x: 0, y: 1 };
+Enemy.LEFT = { x: -1, y: 0 };
+Enemy.RIGHT = { x: 1, y: 0 };
 
 module.exports = Enemy;
