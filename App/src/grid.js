@@ -2,7 +2,7 @@ const UniqueMap = require("./unique-map");
 
 function Grid(game, settings) {
   this.game = game;
-  this.gridSize = { x: 40, y: 40 };
+  this.gridSize = { x: 98, y: 98 };
   this.squares = new UniqueMap(center => `${center.x},${center.y}`);
 };
 
