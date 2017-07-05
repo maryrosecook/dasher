@@ -2,6 +2,7 @@ function Grid(game, settings) {
   this.game = game;
   this.squareSize = { x: 98, y: 98 };
   this.columns = 10;
+  this.rows = 16;
 };
 
 Grid.prototype = {
@@ -12,12 +13,20 @@ Grid.prototype = {
     };
   },
 
+  isOffRight: function(point) {
+    return point.x > this.squareSize.x * this.columns;
+  },
+
+  isOffTop: function(point) {
+    return point.y < 0;
+  },
+
   moveToOffLeft: function(point) {
     return { x: -this.squareSize.x / 2, y: point.y };
   },
 
-  isOffRight: function(point) {
-    return point.x > this.squareSize.x * this.columns;
+  moveToOffBottom: function(point) {
+    return { x: point.x, y: this.squareSize.y * this.rows };
   },
 
   move: function(point, change) {

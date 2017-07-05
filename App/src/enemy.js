@@ -21,6 +21,10 @@ class Enemy {
     if (this.grid.isOffRight(this.center)) {
       this.center = this.grid.moveToOffLeft(this.center);
     }
+
+    if (this.grid.isOffTop(this.center)) {
+      this.center = this.grid.moveToOffBottom(this.center);
+    }
   }
 
   draw(screen) {
