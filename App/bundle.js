@@ -938,45 +938,19 @@ Entities.prototype = {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Line = __webpack_require__(7);
-const UniqueMap = __webpack_require__(6);
+/***/ (function(module, exports) {
 
 function Grid(game, settings) {
   this.game = game;
-  this.gridSize = { x: 98, y: 98 };
-  this.line = new Line();
+  this.squareSize = { x: 98, y: 98 };
 };
 
 Grid.prototype = {
-  update: function() {
-    if (this.game.c.inputter.touch.isDown()) {
-      this.line.addWaypoint(this._currentGridSquareCenter());
-    }
-  },
-
-  _currentGridSquareCenter: function() {
-    let touchListener = this.game.c.inputter.touch;
-    let x = Math.floor(touchListener.getPosition().x / this.gridSize.x) *
-        this.gridSize.x;
-    let y = Math.floor(touchListener.getPosition().y / this.gridSize.y) *
-        this.gridSize.y;
-
+  map: function(point) {
     return {
-      x: x,
-      y: y
+      x: Math.floor(point.x / this.squareSize.x) * this.squareSize.x,
+      y: Math.floor(point.y / this.squareSize.y) * this.squareSize.y
     };
-  },
-
-  draw: function(screen) {
-    this.line.points.forEach((point) => {
-      screen.fillStyle = "black";
-      screen.fillRect(point.x,
-                      point.y,
-                      this.gridSize.x,
-                      this.gridSize.y);
-    });
   }
 };
 
@@ -1083,6 +1057,8 @@ let Coquette = __webpack_require__(0);
 let TouchListener = __webpack_require__(3);
 const Rectangle = __webpack_require__(2);
 const Grid = __webpack_require__(1);
+const Enemy = __webpack_require__(8);
+const Line = __webpack_require__(7);
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -1093,14 +1069,17 @@ function Game() {
                         window.innerWidth,
                         window.innerHeight,
                         "white");
-  this.c.entities.create(Grid);
+  let grid = new Grid();
+  this.c.entities.create(Line, { grid: grid });
+  this.c.entities.create(Enemy, {
+    center: grid.map({ x: 100, y: 100 }),
+    grid: grid
+  });
 };
 
 Game.prototype = {
-  update: function() {
-
-  }
 };
+
 
 
 
@@ -1121,45 +1100,14 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-function UniqueMap(generateComparableKey) {
-  this._generateComparableKey = generateComparableKey;
-  this._map = new Map();
-  this._comparableToOriginalKey = {};
-  this.forEach = this._map.forEach.bind(this._map);
-};
-
-UniqueMap.prototype = {
-  get: function(key) {
-    return this._map.get(this._comparableToOriginalKey[this._generateComparableKey(key)]);
-  },
-
-  set: function(key, value) {
-    this._storeKeyValue(key, value);
-    this._updateSize()
-  },
-
-  _storeKeyValue: function(key, value) {
-    this._comparableToOriginalKey[this._generateComparableKey(key)] = key;
-    this._map.set(key, value);
-  },
-
-  _updateSize: function() {
-    this.size = this._map.size;
-  }
-};
-
-module.exports = UniqueMap;
-
-
-/***/ }),
+/* 6 */,
 /* 7 */
 /***/ (function(module, exports) {
 
 class Line {
-  constructor() {
+  constructor(game, settings) {
+    this.game = game;
+    this.grid = settings.grid;
     this.points = [];
   }
 
@@ -1184,9 +1132,54 @@ class Line {
       waypoint1.x === waypoint2.x ||
       waypoint1.y === waypoint2.y;
   }
+
+  update() {
+    if (this.game.c.inputter.touch.isDown()) {
+      let touchPosition = this.game.c.inputter.touch.getPosition();
+      let gridPosition = this.grid.map(touchPosition);
+      this.addWaypoint(gridPosition);
+    }
+  }
+
+  draw(screen) {
+    this.points.forEach((point) => {
+      screen.fillStyle = "black";
+      screen.fillRect(point.x,
+                      point.y,
+                      this.grid.squareSize.x,
+                      this.grid.squareSize.y);
+    });
+
+  }
 }
 
 module.exports = Line;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+class Enemy {
+  constructor(game, settings) {
+    this.center = settings.center;
+    this.grid = settings.grid;
+  }
+
+  update() {
+
+  }
+
+  draw(screen) {
+    screen.fillStyle = "red";
+    screen.fillRect(this.center.x,
+                    this.center.y,
+                    this.grid.squareSize.x,
+                    this.grid.squareSize.y);
+  }
+};
+
+module.exports = Enemy;
 
 
 /***/ })

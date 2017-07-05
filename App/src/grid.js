@@ -4,7 +4,7 @@ function Grid(game, settings) {
 };
 
 Grid.prototype = {
-  pointToGridSquareCenter: function(point) {
+  map: function(point) {
     return {
       x: Math.floor(point.x / this.squareSize.x) * this.squareSize.x,
       y: Math.floor(point.y / this.squareSize.y) * this.squareSize.y

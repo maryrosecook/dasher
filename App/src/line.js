@@ -30,7 +30,7 @@ class Line {
   update() {
     if (this.game.c.inputter.touch.isDown()) {
       let touchPosition = this.game.c.inputter.touch.getPosition();
-      let gridPosition = this.grid.pointToGridSquareCenter(touchPosition);
+      let gridPosition = this.grid.map(touchPosition);
       this.addWaypoint(gridPosition);
     }
   }
