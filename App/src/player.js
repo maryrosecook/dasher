@@ -22,11 +22,11 @@ class Player {
   }
 
   draw(screen) {
-    screen.fillStyle = "green";
+    screen.fillStyle = "#69D2E7";
     screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
-                    this.center.y - this.grid.squareSize.y / 2,
-                    this.grid.squareSize.x,
-                    this.grid.squareSize.y);
+                      this.center.y - this.grid.squareSize.y / 2,
+                      this.grid.squareSize.x,
+                      this.grid.squareSize.y);
   }
 };
 
