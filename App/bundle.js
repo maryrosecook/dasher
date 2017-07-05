@@ -1166,6 +1166,10 @@ class Line {
     this.points = this.points.concat(this._newPoints(waypoint));
   }
 
+  _isStarted() {
+    return this.points.length > 0;
+  }
+
   _lastPoint() {
     return this.points[this.points.length - 1];
   }
@@ -1189,6 +1193,8 @@ class Line {
       let touchPosition = this.game.c.inputter.touch.getPosition();
       let gridPosition = this.grid.map(touchPosition);
       this.addWaypoint(gridPosition);
+    } else if (this._isStarted()) {
+      this.points = [];
     }
   }
 

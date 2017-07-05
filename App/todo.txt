@@ -1,3 +1,4 @@
+make line stop on touch up
 add more enemies
 make enemies wrap off top of screen
 add another enemy that moves up
