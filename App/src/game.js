@@ -25,10 +25,7 @@ function Game() {
 
 Game.prototype = {
   update: function() {
-    this.player.handlePlayerCollisionsWithEnemies(
-      this.c.entities.all(Enemy));
-    this.player.handleLineCollisionsWithEnemies(
-      this.c.entities.all(Enemy));
+    this.player.handleCollisions();
   },
 
   _addEnemies: function(grid) {
