@@ -941,15 +941,14 @@ const UniqueMap = __webpack_require__(6);
 
 function Grid(game, settings) {
   this.game = game;
-  this.gridSize = { x: 40, y: 40 };
+  this.gridSize = { x: 98, y: 98 };
   this.squares = new UniqueMap(center => `${center.x},${center.y}`);
 };
 
 Grid.prototype = {
   update: function() {
     if (this.game.c.touchListener.isDown()) {
-      let center = this._currentGridSquareCenter();
-      this.squares.set(center, true);
+      this.squares.set(this._currentGridSquareCenter(), true);
     }
   },
 
@@ -1084,35 +1083,30 @@ const Grid = __webpack_require__(1);
 const CANVAS_SELECTOR_ID = "canvas";
 
 function Game() {
-  let coquette = new Coquette(this, CANVAS_SELECTOR_ID, 400, 400, "white");
   let canvas = document.getElementById(CANVAS_SELECTOR_ID);
-  coquette.touchListener = new TouchListener(canvas);
-  this.c = coquette;
+  this.c = new Coquette(this,
+                        CANVAS_SELECTOR_ID,
+                        window.innerWidth,
+                        window.innerHeight,
+                        "white");
 
-  // let rectangle = coquette.entities.create(Rectangle);
-  let grid = coquette.entities.create(Grid);
+  this._addTouchListenerToCoquette(this.c, canvas);
+  let grid = this.c.entities.create(Grid);
 };
 
-Game.prototype.update = function() {
+Game.prototype = {
+  update: function() {
 
+  },
+
+  _addTouchListenerToCoquette: function(coquette, canvas) {
+    coquette.touchListener = new TouchListener(canvas);
+  }
 };
+
+
 
 new Game();
-
-
-// Align rectangles drawn for finger touches to a grid
-// refactor
-// draw rectangle when tap
-// only draw rectangle when finger down
-// draw rectangle at finger position
-// console.log position on pan
-// find out how to make mouse position update immeditatyl on tap down
-// console.log() on tap
-// console.log() on rectangle update
-// draw rectangle all the time
-// get rectangle printing go on draw
-// find out what's printing go
-// get touch listener console.logging on taps
 
 
 /***/ }),
