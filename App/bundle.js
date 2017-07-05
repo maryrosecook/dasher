@@ -1296,6 +1296,7 @@ module.exports = Line;
 
 class Enemy {
   constructor(game, settings) {
+    this.game = game;
     this.center = settings.center;
     this.grid = settings.grid;
     this.direction = settings.direction;
@@ -1310,6 +1311,10 @@ class Enemy {
     // }
 
     // this._wrap();
+  }
+
+  die() {
+    this.game.c.entities.destroy(this);
   }
 
   _wrap() {
@@ -1371,9 +1376,7 @@ class Player {
   handleCollisions(enemies) {
     enemies
       .filter(enemy => gridCollider.isColliding(this, enemy))
-      .forEach(enemy => {
-        this.game.c.entities.destroy(enemy);
-      });
+      .forEach(enemy => enemy.die());
   }
 
   draw(screen) {

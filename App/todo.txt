@@ -1,5 +1,6 @@
-make player gobble enemies
 
+let enemy destroy itself
+make player gobble enemies
 don't add existing points to line
 fix unique map so it gets previous real key if already in map
 only start line if start point is on player

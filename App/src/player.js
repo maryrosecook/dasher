@@ -26,9 +26,7 @@ class Player {
   handleCollisions(enemies) {
     enemies
       .filter(enemy => gridCollider.isColliding(this, enemy))
-      .forEach(enemy => {
-        this.game.c.entities.destroy(enemy);
-      });
+      .forEach(enemy => enemy.die());
   }
 
   draw(screen) {
