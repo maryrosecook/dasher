@@ -44,8 +44,8 @@ class Line {
   draw(screen) {
     this.points.forEach((point) => {
       screen.fillStyle = "black";
-      screen.fillRect(point.x,
-                      point.y,
+      screen.fillRect(point.x - this.grid.squareSize.x / 2,
+                      point.y - this.grid.squareSize.y / 2,
                       this.grid.squareSize.x,
                       this.grid.squareSize.y);
     });
