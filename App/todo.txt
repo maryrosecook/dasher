@@ -1,3 +1,4 @@
+draw a one-block enemy
 refactor grid to only map points to squares
 only allow points that not diagonal
 draw line instead of squares

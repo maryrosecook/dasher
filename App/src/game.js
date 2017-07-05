@@ -16,6 +16,10 @@ function Game() {
                         "white");
   let grid = new Grid();
   this.c.entities.create(Line, { grid: grid });
+  this.c.entities.create(Enemy, {
+    center: grid.pointToGridSquareCenter({ x: 100, y: 100 }),
+    grid: grid
+  });
 };
 
 Game.prototype = {
