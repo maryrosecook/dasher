@@ -4,7 +4,6 @@ const TouchListener = require("./touch-listener");
 const Rectangle = require("./rectangle");
 const Grid = require("./grid");
 const Enemy = require("./enemy");
-const Line = require("./line");
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -16,7 +15,6 @@ function Game() {
                         window.innerHeight,
                         "white");
   let grid = new Grid();
-  this.c.entities.create(Line, { grid: grid });
   this.c.entities.create(Player, {
     grid: grid,
     center: grid.map({ x: 300, y: 300 })

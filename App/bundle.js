@@ -1091,7 +1091,6 @@ const TouchListener = __webpack_require__(3);
 const Rectangle = __webpack_require__(2);
 const Grid = __webpack_require__(1);
 const Enemy = __webpack_require__(8);
-const Line = __webpack_require__(7);
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -1103,7 +1102,6 @@ function Game() {
                         window.innerHeight,
                         "white");
   let grid = new Grid();
-  this.c.entities.create(Line, { grid: grid });
   this.c.entities.create(Player, {
     grid: grid,
     center: grid.map({ x: 300, y: 300 })
@@ -1165,45 +1163,51 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
 
 class Line {
   constructor(game, settings) {
+    this.zindex = -10;
     this.game = game;
     this.grid = settings.grid;
     this.points = [];
   }
 
-  addWaypoint(waypoint) {
-    this.points = this.points.concat(this._newPoints(waypoint));
+  addWaypoint(waypoint, playerCenter) {
+    this.points = this.points.concat(
+      this._newPoints(waypoint, playerCenter));
   }
 
-  _isStarted() {
+  isStarted() {
     return this.points.length > 0;
   }
 
-  _lastPoint() {
+  lastPoint() {
     return this.points[this.points.length - 1];
   }
 
-  _newPoints(waypoint) {
-    if (this._isAllowed(this._lastPoint(), waypoint)) {
+  _newPoints(waypoint, playerCenter) {
+    if (this._isAllowed(this.lastPoint(), waypoint, playerCenter)) {
       return [waypoint];
     } else {
       return [];
     }
   }
 
-  _isAllowed(waypoint1, waypoint2) {
-    return waypoint1 === undefined ||
-      waypoint1.x === waypoint2.x ||
-      waypoint1.y === waypoint2.y;
+  _isAllowed(previousPoint, newPoint, playerCenter) {
+    return this._isStartingOnPlayerCenter(newPoint, playerCenter) ||
+      previousPoint !== undefined &&
+      (previousPoint.x === newPoint.x ||
+       previousPoint.y === newPoint.y);
+  }
+
+  _isStartingOnPlayerCenter(newPoint, playerCenter) {
+    return !this.isStarted() &&
+      this._isEqual(newPoint, playerCenter);
+  }
+
+  _isEqual(point1, point2) {
+    return point1.x === point2.x &&
+      point1.y === point2.y;
   }
 
   update() {
-    if (this.game.c.inputter.touch.isDown()) {
-      let touchPosition = this.game.c.inputter.touch.getPosition();
-      let gridPosition = this.grid.map(touchPosition);
-      this.addWaypoint(gridPosition);
-    } else if (this._isStarted()) {
-      this.points = [];
-    }
   }
 
   draw(screen) {
@@ -1272,16 +1276,29 @@ module.exports = Enemy;
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+const Line = __webpack_require__(7);
 
 class Player {
   constructor(game, settings) {
+    this.game = game;
     this.center = settings.center;
     this.grid = settings.grid;
+    this.line = this.game.c.entities.create(Line, { grid: this.grid });
   }
 
   update() {
-
+    if (this.game.c.inputter.touch.isDown()) {
+      let touchPosition = this.game.c.inputter.touch.getPosition();
+      let gridPosition = this.grid.map(touchPosition);
+      this.line.addWaypoint(gridPosition, this.center);
+      if (this.line.isStarted()) {
+        this.center = this.line.lastPoint();
+      }
+    } else {
+      this.line.points = [];
+    }
   }
 
   draw(screen) {

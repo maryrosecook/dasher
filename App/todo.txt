@@ -1,4 +1,5 @@
-
+only start line if start point is on player
+host line on player
 add player
 make enemies move at random intervals
 make line stop on touch up
