@@ -12,7 +12,7 @@ function Game() {
                         window.innerWidth,
                         window.innerHeight,
                         "white");
-  let grid = this.c.entities.create(Grid);
+  this.c.entities.create(Grid);
 };
 
 Game.prototype = {
