@@ -940,18 +940,19 @@ Entities.prototype = {
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+const Line = __webpack_require__(7);
 const UniqueMap = __webpack_require__(6);
 
 function Grid(game, settings) {
   this.game = game;
   this.gridSize = { x: 98, y: 98 };
-  this.squares = new UniqueMap(center => `${center.x},${center.y}`);
+  this.line = new Line();
 };
 
 Grid.prototype = {
   update: function() {
     if (this.game.c.inputter.touch.isDown()) {
-      this.squares.set(this._currentGridSquareCenter(), true);
+      this.line.addWaypoint(this._currentGridSquareCenter());
     }
   },
 
@@ -969,10 +970,10 @@ Grid.prototype = {
   },
 
   draw: function(screen) {
-    this.squares.forEach((on, center) => {
+    this.line.points.forEach((point) => {
       screen.fillStyle = "black";
-      screen.fillRect(center.x,
-                      center.y,
+      screen.fillRect(point.x,
+                      point.y,
                       this.gridSize.x,
                       this.gridSize.y);
     });
@@ -1092,7 +1093,7 @@ function Game() {
                         window.innerWidth,
                         window.innerHeight,
                         "white");
-  let grid = this.c.entities.create(Grid);
+  this.c.entities.create(Grid);
 };
 
 Game.prototype = {
@@ -1151,6 +1152,41 @@ UniqueMap.prototype = {
 };
 
 module.exports = UniqueMap;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+class Line {
+  constructor() {
+    this.points = [];
+  }
+
+  addWaypoint(waypoint) {
+    this.points = this.points.concat(this._newPoints(waypoint));
+  }
+
+  _lastPoint() {
+    return this.points[this.points.length - 1];
+  }
+
+  _newPoints(waypoint) {
+    if (this._isAllowed(this._lastPoint(), waypoint)) {
+      return [waypoint];
+    } else {
+      return [];
+    }
+  }
+
+  _isAllowed(waypoint1, waypoint2) {
+    return waypoint1 === undefined ||
+      waypoint1.x === waypoint2.x ||
+      waypoint1.y === waypoint2.y;
+  }
+}
+
+module.exports = Line;
 
 
 /***/ })

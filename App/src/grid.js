@@ -1,15 +1,16 @@
+const Line = require("./line");
 const UniqueMap = require("./unique-map");
 
 function Grid(game, settings) {
   this.game = game;
   this.gridSize = { x: 98, y: 98 };
-  this.squares = new UniqueMap(center => `${center.x},${center.y}`);
+  this.line = new Line();
 };
 
 Grid.prototype = {
   update: function() {
     if (this.game.c.inputter.touch.isDown()) {
-      this.squares.set(this._currentGridSquareCenter(), true);
+      this.line.addWaypoint(this._currentGridSquareCenter());
     }
   },
 
@@ -27,10 +28,10 @@ Grid.prototype = {
   },
 
   draw: function(screen) {
-    this.squares.forEach((on, center) => {
+    this.line.points.forEach((point) => {
       screen.fillStyle = "black";
-      screen.fillRect(center.x,
-                      center.y,
+      screen.fillRect(point.x,
+                      point.y,
                       this.gridSize.x,
                       this.gridSize.y);
     });

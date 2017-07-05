@@ -1,6 +1,9 @@
-
-
-
+only allow points that not diagonal
+draw line instead of squares
+take waypoint and generate points to add to line
+only add points below previous point
+add start point to line
+create line that can be instantiated and stored on grid
 get rid of old squares
 store keyFn(center) => real key, on set use real key in _map, on get lookup real key using keyfn
 on set use real key in _map
