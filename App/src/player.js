@@ -23,11 +23,33 @@ class Player {
     }
   }
 
-  handleCollisions(enemies) {
+  handleCollisions() {
+    this.handlePlayerCollisionsWithEnemies(this.c.entities.all(Enemy));
+    this.handleLineCollisionsWithEnemies(this.c.entities.all(Enemy));
+  }
+
+  handlePlayerCollisionsWithEnemies(enemies) {
     enemies
       .filter(enemy =>
               gridCollider.isColliding(this.center, enemy.center))
       .forEach(enemy => enemy.die());
+  }
+
+  handleLineCollisionsWithEnemies(enemies) {
+    if (this.isLineCollidingWithAnyEnemies(enemies)) {
+      this.die();
+    }
+  }
+
+  die() {
+    this.game.c.entities.destroy(this.line);
+    this.game.c.entities.destroy(this);
+  }
+
+  isLineCollidingWithAnyEnemies(enemies) {
+    return enemies
+      .filter(enemy => this.line.isCollidingWith(enemy.center))
+      .length > 0;
   }
 
   draw(screen) {

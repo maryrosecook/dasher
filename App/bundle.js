@@ -1112,7 +1112,10 @@ function Game() {
 
 Game.prototype = {
   update: function() {
-    this.player.handleCollisions(this.c.entities.all(Enemy));
+    this.player.handlePlayerCollisionsWithEnemies(
+      this.c.entities.all(Enemy));
+    this.player.handleLineCollisionsWithEnemies(
+      this.c.entities.all(Enemy));
   },
 
   _addEnemies: function(grid) {
@@ -1218,6 +1221,7 @@ module.exports = UniqueMap;
 /***/ (function(module, exports, __webpack_require__) {
 
 const UniqueMap = __webpack_require__(6);
+const gridCollider = __webpack_require__(10);
 
 class Line {
   constructor(game, settings) {
@@ -1238,6 +1242,12 @@ class Line {
 
   clear() {
     this.pointsMap.clear();
+  }
+
+  isCollidingWith(center) {
+    return Array.from(this.pointsMap.keys())
+      .filter(point => gridCollider.isColliding(point, center))
+      .length > 0;
   }
 
   isStarted() {
@@ -1305,12 +1315,12 @@ class Enemy {
   }
 
   update() {
-    // if (this.lastMoved + this.moveEvery < Date.now()) {
-    //   this.lastMoved = Date.now();
-    //   this.center = this.grid.move(this.center, this.direction);
-    // }
+    if (this.lastMoved + this.moveEvery < Date.now()) {
+      this.lastMoved = Date.now();
+      this.center = this.grid.move(this.center, this.direction);
+    }
 
-    // this._wrap();
+    this._wrap();
   }
 
   die() {
@@ -1373,11 +1383,33 @@ class Player {
     }
   }
 
-  handleCollisions(enemies) {
+  handleCollisions() {
+    this.handlePlayerCollisionsWithEnemies(this.c.entities.all(Enemy));
+    this.handleLineCollisionsWithEnemies(this.c.entities.all(Enemy));
+  }
+
+  handlePlayerCollisionsWithEnemies(enemies) {
     enemies
       .filter(enemy =>
               gridCollider.isColliding(this.center, enemy.center))
       .forEach(enemy => enemy.die());
+  }
+
+  handleLineCollisionsWithEnemies(enemies) {
+    if (this.isLineCollidingWithAnyEnemies(enemies)) {
+      this.die();
+    }
+  }
+
+  die() {
+    this.game.c.entities.destroy(this.line);
+    this.game.c.entities.destroy(this);
+  }
+
+  isLineCollidingWithAnyEnemies(enemies) {
+    return enemies
+      .filter(enemy => this.line.isCollidingWith(enemy.center))
+      .length > 0;
   }
 
   draw(screen) {

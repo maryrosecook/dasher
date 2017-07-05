@@ -1,4 +1,5 @@
 const UniqueMap = require("./unique-map");
+const gridCollider = require("./grid-collider");
 
 class Line {
   constructor(game, settings) {
@@ -19,6 +20,12 @@ class Line {
 
   clear() {
     this.pointsMap.clear();
+  }
+
+  isCollidingWith(center) {
+    return Array.from(this.pointsMap.keys())
+      .filter(point => gridCollider.isColliding(point, center))
+      .length > 0;
   }
 
   isStarted() {
