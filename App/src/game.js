@@ -1,5 +1,5 @@
-let Coquette = require("./coquette");
-let TouchListener = require("./touch-listener");
+const Coquette = require("./coquette");
+const TouchListener = require("./touch-listener");
 const Rectangle = require("./rectangle");
 const Grid = require("./grid");
 const Enemy = require("./enemy");
