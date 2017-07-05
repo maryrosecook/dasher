@@ -1311,7 +1311,7 @@ class Enemy {
     this.grid = settings.grid;
     this.direction = settings.direction;
     this.lastMoved = Date.now();
-    this.moveEvery = 300 + Math.random() * 300;
+    this.moveEvery = 100 + Math.random() * 300;
   }
 
   update() {
