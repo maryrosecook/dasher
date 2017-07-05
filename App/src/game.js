@@ -2,6 +2,8 @@ let Coquette = require("./coquette");
 let TouchListener = require("./touch-listener");
 const Rectangle = require("./rectangle");
 const Grid = require("./grid");
+const Enemy = require("./enemy");
+const Line = require("./line");
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -12,14 +14,13 @@ function Game() {
                         window.innerWidth,
                         window.innerHeight,
                         "white");
-  this.c.entities.create(Grid);
+  let grid = new Grid();
+  this.c.entities.create(Line, { grid: grid });
 };
 
 Game.prototype = {
-  update: function() {
-
-  }
 };
+
 
 
 
