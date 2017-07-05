@@ -22,6 +22,12 @@ function Game() {
     grid: grid,
     direction: Enemy.RIGHT
   });
+
+  this.c.entities.create(Enemy, {
+    center: grid.map({ x: 100, y: 100 }),
+    grid: grid,
+    direction: Enemy.UP
+  });
 };
 
 Game.prototype = {

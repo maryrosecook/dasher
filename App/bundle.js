@@ -943,6 +943,7 @@ Entities.prototype = {
 function Grid(game, settings) {
   this.game = game;
   this.squareSize = { x: 98, y: 98 };
+  this.columns = 10;
 };
 
 Grid.prototype = {
@@ -950,6 +951,21 @@ Grid.prototype = {
     return {
       x: Math.floor(point.x / this.squareSize.x) * this.squareSize.x,
       y: Math.floor(point.y / this.squareSize.y) * this.squareSize.y
+    };
+  },
+
+  moveToOffLeft: function(point) {
+    return { x: -this.squareSize.x / 2, y: point.y };
+  },
+
+  isOffRight: function(point) {
+    return point.x > this.squareSize.x * this.columns;
+  },
+
+  move: function(point, change) {
+    return {
+      x: point.x + change.x * this.squareSize.x,
+      y: point.y + change.y * this.squareSize.y
     };
   }
 };
@@ -1071,9 +1087,17 @@ function Game() {
                         "white");
   let grid = new Grid();
   this.c.entities.create(Line, { grid: grid });
+
   this.c.entities.create(Enemy, {
     center: grid.map({ x: 100, y: 100 }),
-    grid: grid
+    grid: grid,
+    direction: Enemy.RIGHT
+  });
+
+  this.c.entities.create(Enemy, {
+    center: grid.map({ x: 100, y: 100 }),
+    grid: grid,
+    direction: Enemy.UP
   });
 };
 
@@ -1164,13 +1188,24 @@ class Enemy {
   constructor(game, settings) {
     this.center = settings.center;
     this.grid = settings.grid;
+    this.direction = settings.direction;
     this.lastMoved = Date.now();
   }
 
   update() {
-    if (this.lastMoved + 1000 < Date.now()) {
+    const MOVE_EVERY = 100;
+
+    if (this.lastMoved + MOVE_EVERY < Date.now()) {
       this.lastMoved = Date.now();
-      this.center.x += this.grid.squareSize.x;
+      this.center = this.grid.move(this.center, this.direction);
+    }
+
+    this._wrap();
+  }
+
+  _wrap() {
+    if (this.grid.isOffRight(this.center)) {
+      this.center = this.grid.moveToOffLeft(this.center);
     }
   }
 
@@ -1182,6 +1217,11 @@ class Enemy {
                     this.grid.squareSize.y);
   }
 };
+
+Enemy.UP = { x: 0, y: -1 };
+Enemy.DOWN = { x: 0, y: 1 };
+Enemy.LEFT = { x: -1, y: 0 };
+Enemy.RIGHT = { x: 1, y: 0 };
 
 module.exports = Enemy;
 

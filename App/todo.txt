@@ -1,3 +1,4 @@
+add another enemy that moves up
 refactor enemy to take movement direction
 wrap enemy at edge of screen
 move enemy right
