@@ -4,12 +4,11 @@ class Enemy {
     this.grid = settings.grid;
     this.direction = settings.direction;
     this.lastMoved = Date.now();
+    this.moveEvery = 300 + Math.random() * 300;
   }
 
   update() {
-    const MOVE_EVERY = 500;
-
-    if (this.lastMoved + MOVE_EVERY < Date.now()) {
+    if (this.lastMoved + this.moveEvery < Date.now()) {
       this.lastMoved = Date.now();
       this.center = this.grid.move(this.center, this.direction);
     }
