@@ -9,8 +9,7 @@ function Grid(game, settings) {
 Grid.prototype = {
   update: function() {
     if (this.game.c.touchListener.isDown()) {
-      let center = this._currentGridSquareCenter();
-      this.squares.set(center, true);
+      this.squares.set(this._currentGridSquareCenter(), true);
     }
   },
 
