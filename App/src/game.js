@@ -19,19 +19,6 @@ Game.prototype.update = function() {
 
 };
 
+
+
 new Game();
-
-
-// Align rectangles drawn for finger touches to a grid
-// refactor
-// draw rectangle when tap
-// only draw rectangle when finger down
-// draw rectangle at finger position
-// console.log position on pan
-// find out how to make mouse position update immeditatyl on tap down
-// console.log() on tap
-// console.log() on rectangle update
-// draw rectangle all the time
-// get rectangle printing go on draw
-// find out what's printing go
-// get touch listener console.logging on taps
