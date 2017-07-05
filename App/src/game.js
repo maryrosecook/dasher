@@ -24,7 +24,19 @@ function Game() {
   });
 
   this.c.entities.create(Enemy, {
-    center: grid.map({ x: 100, y: 100 }),
+    center: grid.map({ x: 100, y: 300 }),
+    grid: grid,
+    direction: Enemy.UP
+  });
+
+  this.c.entities.create(Enemy, {
+    center: grid.map({ x: 400, y: 700 }),
+    grid: grid,
+    direction: Enemy.UP
+  });
+
+  this.c.entities.create(Enemy, {
+    center: grid.map({ x: 900, y: 1700 }),
     grid: grid,
     direction: Enemy.UP
   });
