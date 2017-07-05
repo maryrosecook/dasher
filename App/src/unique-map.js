@@ -18,6 +18,11 @@ UniqueMap.prototype = {
     this._updateSize();
   },
 
+  clear: function() {
+    this.size = 0;
+    this._map.clear();
+  },
+
   _storeKeyValue: function(key, value) {
     let existingRealKey = this._existingRealKey(key);
     let realKey = existingRealKey !== undefined ?

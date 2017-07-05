@@ -5,7 +5,6 @@ class Line {
     this.zindex = -10;
     this.game = game;
     this.grid = settings.grid;
-    this.points = [];
     this.pointsMap = new UniqueMap((point) => `${point.x},${point.y}`);
   }
 
@@ -15,8 +14,11 @@ class Line {
       this.pointsMap.set(point, true);
     });
 
-    this.points = this.points.concat(newPoints);
     return newPoints.length > 0;
+  }
+
+  clear() {
+    this.pointsMap.clear();
   }
 
   isStarted() {
@@ -57,11 +59,11 @@ class Line {
 
   draw(screen) {
     screen.fillStyle = "#A7DBD8";
-    this.points.forEach((point) => {
+    this.pointsMap.forEach((_, point) => {
       screen.fillRect(point.x - this.grid.squareSize.x / 2,
-                        point.y - this.grid.squareSize.y / 2,
-                        this.grid.squareSize.x,
-                        this.grid.squareSize.y);
+                      point.y - this.grid.squareSize.y / 2,
+                      this.grid.squareSize.x,
+                      this.grid.squareSize.y);
     });
   }
 }
