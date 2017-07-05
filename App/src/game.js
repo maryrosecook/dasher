@@ -1,3 +1,4 @@
+const Player = require("./player");
 const Coquette = require("./coquette");
 const TouchListener = require("./touch-listener");
 const Rectangle = require("./rectangle");
@@ -16,12 +17,15 @@ function Game() {
                         "white");
   let grid = new Grid();
   this.c.entities.create(Line, { grid: grid });
+  this.c.entities.create(Player, {
+    grid: grid,
+    center: grid.map({ x: 300, y: 300 })
+  });
   this._addEnemies(grid);
 };
 
 Game.prototype = {
   _addEnemies: function(grid) {
-    console.log(grid.map({ x: 900, y: 1700 }))
     this.c.entities.create(Enemy, {
       center: grid.map({ x: 100, y: 100 }),
       grid: grid,

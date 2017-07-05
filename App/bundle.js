@@ -1085,8 +1085,9 @@ module.exports = TouchListener;
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-let Coquette = __webpack_require__(0);
-let TouchListener = __webpack_require__(3);
+const Player = __webpack_require__(9);
+const Coquette = __webpack_require__(0);
+const TouchListener = __webpack_require__(3);
 const Rectangle = __webpack_require__(2);
 const Grid = __webpack_require__(1);
 const Enemy = __webpack_require__(8);
@@ -1103,12 +1104,15 @@ function Game() {
                         "white");
   let grid = new Grid();
   this.c.entities.create(Line, { grid: grid });
+  this.c.entities.create(Player, {
+    grid: grid,
+    center: grid.map({ x: 300, y: 300 })
+  });
   this._addEnemies(grid);
 };
 
 Game.prototype = {
   _addEnemies: function(grid) {
-    console.log(grid.map({ x: 900, y: 1700 }))
     this.c.entities.create(Enemy, {
       center: grid.map({ x: 100, y: 100 }),
       grid: grid,
@@ -1227,12 +1231,11 @@ class Enemy {
     this.grid = settings.grid;
     this.direction = settings.direction;
     this.lastMoved = Date.now();
+    this.moveEvery = 300 + Math.random() * 300;
   }
 
   update() {
-    const MOVE_EVERY = 500;
-
-    if (this.lastMoved + MOVE_EVERY < Date.now()) {
+    if (this.lastMoved + this.moveEvery < Date.now()) {
       this.lastMoved = Date.now();
       this.center = this.grid.move(this.center, this.direction);
     }
@@ -1265,6 +1268,32 @@ Enemy.LEFT = { x: -1, y: 0 };
 Enemy.RIGHT = { x: 1, y: 0 };
 
 module.exports = Enemy;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+class Player {
+  constructor(game, settings) {
+    this.center = settings.center;
+    this.grid = settings.grid;
+  }
+
+  update() {
+
+  }
+
+  draw(screen) {
+    screen.fillStyle = "green";
+    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
+                    this.center.y - this.grid.squareSize.y / 2,
+                    this.grid.squareSize.x,
+                    this.grid.squareSize.y);
+  }
+};
+
+module.exports = Player;
 
 
 /***/ })
