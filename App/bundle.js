@@ -63,14 +63,144 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+class Enemy {
+  constructor(game, settings) {
+    this.game = game;
+    this.center = settings.center;
+    this.grid = settings.grid;
+    this.direction = settings.direction;
+    this.lastMoved = Date.now();
+    this.moveEvery = 100 + Math.random() * 300;
+  }
+
+  update() {
+    if (this.lastMoved + this.moveEvery < Date.now()) {
+      this.lastMoved = Date.now();
+      this.center = this.grid.move(this.center, this.direction);
+    }
+
+    this._wrap();
+  }
+
+  die() {
+    this.game.c.entities.destroy(this);
+  }
+
+  _wrap() {
+    if (this.grid.isOffRight(this.center)) {
+      this.center = this.grid.moveToOffLeft(this.center);
+    }
+
+    if (this.grid.isOffTop(this.center)) {
+      this.center = this.grid.moveToOffBottom(this.center);
+    }
+  }
+
+  draw(screen) {
+    screen.fillStyle = "#FA6900";
+    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
+                      this.center.y - this.grid.squareSize.y / 2,
+                      this.grid.squareSize.x,
+                      this.grid.squareSize.y);
+  }
+};
+
+Enemy.UP = { x: 0, y: -1 };
+Enemy.DOWN = { x: 0, y: 1 };
+Enemy.LEFT = { x: -1, y: 0 };
+Enemy.RIGHT = { x: 1, y: 0 };
+
+module.exports = Enemy;
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-let TouchListener = __webpack_require__(3);
+let Hammer = __webpack_require__(8);
+
+function TouchListener(canvas) {
+  let hammer = this._setupHammer(canvas);
+  this._monitorDown(hammer);
+  this._monitorPosition(hammer);
+};
+
+TouchListener.prototype = {
+  _setupHammer: function(canvas) {
+    let hammer = new Hammer(canvas, {});
+    let pan = new Hammer.Pan({ threshold: 0 });
+    let press = new Hammer.Press({ time: 0 });
+    hammer.add(pan);
+    hammer.add(press);
+    return hammer;
+  },
+
+  _monitorPosition: function(hammer) {
+    this.position = {};
+
+    hammer.on('press', (e) => {
+      this.position.x = e.center.x;
+      this.position.y = e.center.y;
+    });
+
+    hammer.on('pan', (e) => {
+      this.position.x = e.center.x;
+      this.position.y = e.center.y;
+    });
+  },
+
+  _monitorDown: function(hammer) {
+    this.down = false;
+
+    hammer.on('press', (e) => this.down = true);
+    hammer.on('pan', (e) => this.down = true);
+
+    hammer.on('pressup', (e) => this.down = false);
+    hammer.on('tap', (e) => this.down = false);
+    hammer.on('panend', (e) => this.down = false);
+  },
+
+  getPosition: function() {
+    return {
+      x: this.position.x,
+      y: this.position.y
+    };
+  },
+
+  isDown: function() {
+    return this.down === true;
+  }
+};
+
+module.exports = TouchListener;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+const gridCollider = {
+  isColliding(center1, center2) {
+    return center1.x === center2.x &&
+      center1.y === center2.y;
+  }
+};
+
+module.exports = gridCollider;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+let TouchListener = __webpack_require__(1);
 
 var Coquette = function(game, canvasId, width, height, backgroundColor, autoFocus) {
   var canvas = document.getElementById(canvasId);
@@ -937,7 +1067,7 @@ Entities.prototype = {
 
 
 /***/ }),
-/* 1 */
+/* 4 */
 /***/ (function(module, exports) {
 
 function Grid(game, settings) {
@@ -990,7 +1120,98 @@ module.exports = Grid;
 
 
 /***/ }),
-/* 2 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const gridCollider = __webpack_require__(2);
+const Line = __webpack_require__(9);
+const Enemy = __webpack_require__(0);
+
+class Player {
+  constructor(game, settings) {
+    this.game = game;
+    this.center = settings.center;
+    this.grid = settings.grid;
+    this.line = this.game.c.entities.create(Line, { grid: this.grid });
+  }
+
+  update() {
+    if (this.game.c.inputter.touch.isDown()) {
+      let touchPosition = this.game.c.inputter.touch.getPosition();
+      let gridPosition = this.grid.map(touchPosition);
+      let werePointsAdded = this.line.addWaypoint(gridPosition,
+                                                  this.center);
+      if (werePointsAdded) {
+        this.center = this.line.lastPoint();
+      }
+    } else {
+      this.line.clear();
+    }
+  }
+
+  handleCollisions() {
+    this.dieIfHitEnemyWhenNotCharged(
+      this.game.c.entities.all(Enemy));
+    this.handlePlayerCollisionsWithEnemies(
+      this.game.c.entities.all(Enemy));
+    this.handleLineCollisionsWithEnemies(
+      this.game.c.entities.all(Enemy));
+  }
+
+  dieIfHitEnemyWhenNotCharged(enemies) {
+    if (!this._isCharged() &&
+        this._enemiesCollidingWith(enemies).length > 0) {
+      this.die();
+    }
+  }
+
+  handlePlayerCollisionsWithEnemies(enemies) {
+    this._enemiesCollidingWith(enemies)
+      .forEach(enemy => enemy.die());
+  }
+
+  _enemiesCollidingWith(enemies) {
+    return enemies
+      .filter(enemy =>
+              gridCollider.isColliding(this.center, enemy.center));
+  }
+
+  _isCharged() {
+    const MIN_CHARGE_LINE_LENGTH = 5;
+    return this.line.size() >= MIN_CHARGE_LINE_LENGTH;
+  }
+
+  handleLineCollisionsWithEnemies(enemies) {
+    if (this.isLineCollidingWithAnyEnemies(enemies)) {
+      this.die();
+    }
+  }
+
+  die() {
+    this.game.c.entities.destroy(this.line);
+    this.game.c.entities.destroy(this);
+  }
+
+  isLineCollidingWithAnyEnemies(enemies) {
+    return enemies
+      .filter(enemy => this.line.isCollidingWith(enemy.center))
+      .length > 0;
+  }
+
+  draw(screen) {
+    screen.fillStyle = "#69D2E7";
+    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
+                    this.center.y - this.grid.squareSize.y / 2,
+                    this.grid.squareSize.x,
+                    this.grid.squareSize.y);
+  }
+};
+
+module.exports = Player;
+
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports) {
 
 function Rectangle(game, settings) {
@@ -1020,77 +1241,15 @@ module.exports = Rectangle;
 
 
 /***/ }),
-/* 3 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-let Hammer = __webpack_require__(5);
-
-function TouchListener(canvas) {
-  let hammer = this._setupHammer(canvas);
-  this._monitorDown(hammer);
-  this._monitorPosition(hammer);
-};
-
-TouchListener.prototype = {
-  _setupHammer: function(canvas) {
-    let hammer = new Hammer(canvas, {});
-    let pan = new Hammer.Pan({ threshold: 0 });
-    let press = new Hammer.Press({ time: 0 });
-    hammer.add(pan);
-    hammer.add(press);
-    return hammer;
-  },
-
-  _monitorPosition: function(hammer) {
-    this.position = {};
-
-    hammer.on('press', (e) => {
-      this.position.x = e.center.x;
-      this.position.y = e.center.y;
-    });
-
-    hammer.on('pan', (e) => {
-      this.position.x = e.center.x;
-      this.position.y = e.center.y;
-    });
-  },
-
-  _monitorDown: function(hammer) {
-    this.down = false;
-
-    hammer.on('press', (e) => this.down = true);
-    hammer.on('pan', (e) => this.down = true);
-
-    hammer.on('pressup', (e) => this.down = false);
-    hammer.on('tap', (e) => this.down = false);
-    hammer.on('panend', (e) => this.down = false);
-  },
-
-  getPosition: function() {
-    return {
-      x: this.position.x,
-      y: this.position.y
-    };
-  },
-
-  isDown: function() {
-    return this.down === true;
-  }
-};
-
-module.exports = TouchListener;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Player = __webpack_require__(9);
-const Coquette = __webpack_require__(0);
-const TouchListener = __webpack_require__(3);
-const Rectangle = __webpack_require__(2);
-const Grid = __webpack_require__(1);
-const Enemy = __webpack_require__(8);
+const Player = __webpack_require__(5);
+const Coquette = __webpack_require__(3);
+const TouchListener = __webpack_require__(1);
+const Rectangle = __webpack_require__(6);
+const Grid = __webpack_require__(4);
+const Enemy = __webpack_require__(0);
 
 const CANVAS_SELECTOR_ID = "canvas";
 
@@ -1112,10 +1271,7 @@ function Game() {
 
 Game.prototype = {
   update: function() {
-    this.player.handlePlayerCollisionsWithEnemies(
-      this.c.entities.all(Enemy));
-    this.player.handleLineCollisionsWithEnemies(
-      this.c.entities.all(Enemy));
+    this.player.handleCollisions();
   },
 
   _addEnemies: function(grid) {
@@ -1152,7 +1308,7 @@ new Game();
 
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
@@ -1165,63 +1321,11 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.8 - 2016-04-23
 
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-function UniqueMap(generateComparableKey) {
-  this._generateComparableKey = generateComparableKey;
-  this._map = new Map();
-  this._comparableToRealKey = {};
-  this.forEach = this._map.forEach.bind(this._map);
-  this.keys = this._map.keys.bind(this._map);
-  this.lastKey = undefined;
-};
-
-UniqueMap.prototype = {
-  get: function(key) {
-    return this._map.get(this._comparableToRealKey[
-      this._generateComparableKey(key)]);
-  },
-
-  set: function(key, value) {
-    this._storeKeyValue(key, value);
-    this._updateSize();
-  },
-
-  clear: function() {
-    this.size = 0;
-    this._map.clear();
-  },
-
-  _storeKeyValue: function(key, value) {
-    let existingRealKey = this._existingRealKey(key);
-    let realKey = existingRealKey !== undefined ?
-        existingRealKey :
-        key;
-
-    this._comparableToRealKey[this._generateComparableKey(key)]
-      = realKey;
-    this._map.set(realKey, value);
-  },
-
-  _existingRealKey: function(key) {
-    return this._comparableToRealKey[this._generateComparableKey(key)];
-  },
-
-  _updateSize: function() {
-    this.size = this._map.size;
-  }
-};
-
-module.exports = UniqueMap;
-
-
-/***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const UniqueMap = __webpack_require__(6);
-const gridCollider = __webpack_require__(10);
+const UniqueMap = __webpack_require__(10);
+const gridCollider = __webpack_require__(2);
 
 class Line {
   constructor(game, settings) {
@@ -1242,6 +1346,10 @@ class Line {
 
   clear() {
     this.pointsMap.clear();
+  }
+
+  size() {
+    return this.pointsMap.size;
   }
 
   isCollidingWith(center) {
@@ -1301,141 +1409,55 @@ module.exports = Line;
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-class Enemy {
-  constructor(game, settings) {
-    this.game = game;
-    this.center = settings.center;
-    this.grid = settings.grid;
-    this.direction = settings.direction;
-    this.lastMoved = Date.now();
-    this.moveEvery = 100 + Math.random() * 300;
-  }
-
-  update() {
-    if (this.lastMoved + this.moveEvery < Date.now()) {
-      this.lastMoved = Date.now();
-      this.center = this.grid.move(this.center, this.direction);
-    }
-
-    this._wrap();
-  }
-
-  die() {
-    this.game.c.entities.destroy(this);
-  }
-
-  _wrap() {
-    if (this.grid.isOffRight(this.center)) {
-      this.center = this.grid.moveToOffLeft(this.center);
-    }
-
-    if (this.grid.isOffTop(this.center)) {
-      this.center = this.grid.moveToOffBottom(this.center);
-    }
-  }
-
-  draw(screen) {
-    screen.fillStyle = "#FA6900";
-    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
-                      this.center.y - this.grid.squareSize.y / 2,
-                      this.grid.squareSize.x,
-                      this.grid.squareSize.y);
-  }
-};
-
-Enemy.UP = { x: 0, y: -1 };
-Enemy.DOWN = { x: 0, y: 1 };
-Enemy.LEFT = { x: -1, y: 0 };
-Enemy.RIGHT = { x: 1, y: 0 };
-
-module.exports = Enemy;
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const gridCollider = __webpack_require__(10);
-const Line = __webpack_require__(7);
-
-class Player {
-  constructor(game, settings) {
-    this.game = game;
-    this.center = settings.center;
-    this.grid = settings.grid;
-    this.line = this.game.c.entities.create(Line, { grid: this.grid });
-  }
-
-  update() {
-    if (this.game.c.inputter.touch.isDown()) {
-      let touchPosition = this.game.c.inputter.touch.getPosition();
-      let gridPosition = this.grid.map(touchPosition);
-      let werePointsAdded = this.line.addWaypoint(gridPosition,
-                                                  this.center);
-      if (werePointsAdded) {
-        this.center = this.line.lastPoint();
-      }
-    } else {
-      this.line.clear();
-    }
-  }
-
-  handleCollisions() {
-    this.handlePlayerCollisionsWithEnemies(this.c.entities.all(Enemy));
-    this.handleLineCollisionsWithEnemies(this.c.entities.all(Enemy));
-  }
-
-  handlePlayerCollisionsWithEnemies(enemies) {
-    enemies
-      .filter(enemy =>
-              gridCollider.isColliding(this.center, enemy.center))
-      .forEach(enemy => enemy.die());
-  }
-
-  handleLineCollisionsWithEnemies(enemies) {
-    if (this.isLineCollidingWithAnyEnemies(enemies)) {
-      this.die();
-    }
-  }
-
-  die() {
-    this.game.c.entities.destroy(this.line);
-    this.game.c.entities.destroy(this);
-  }
-
-  isLineCollidingWithAnyEnemies(enemies) {
-    return enemies
-      .filter(enemy => this.line.isCollidingWith(enemy.center))
-      .length > 0;
-  }
-
-  draw(screen) {
-    screen.fillStyle = "#69D2E7";
-    screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
-                    this.center.y - this.grid.squareSize.y / 2,
-                    this.grid.squareSize.x,
-                    this.grid.squareSize.y);
-  }
-};
-
-module.exports = Player;
-
-
-/***/ }),
 /* 10 */
 /***/ (function(module, exports) {
 
-const gridCollider = {
-  isColliding(center1, center2) {
-    return center1.x === center2.x &&
-      center1.y === center2.y;
+function UniqueMap(generateComparableKey) {
+  this._generateComparableKey = generateComparableKey;
+  this._map = new Map();
+  this._comparableToRealKey = {};
+  this.forEach = this._map.forEach.bind(this._map);
+  this.keys = this._map.keys.bind(this._map);
+  this.lastKey = undefined;
+};
+
+UniqueMap.prototype = {
+  get: function(key) {
+    return this._map.get(this._comparableToRealKey[
+      this._generateComparableKey(key)]);
+  },
+
+  set: function(key, value) {
+    this._storeKeyValue(key, value);
+    this._updateSize();
+  },
+
+  clear: function() {
+    this.size = 0;
+    this._map.clear();
+  },
+
+  _storeKeyValue: function(key, value) {
+    let existingRealKey = this._existingRealKey(key);
+    let realKey = existingRealKey !== undefined ?
+        existingRealKey :
+        key;
+
+    this._comparableToRealKey[this._generateComparableKey(key)]
+      = realKey;
+    this._map.set(realKey, value);
+  },
+
+  _existingRealKey: function(key) {
+    return this._comparableToRealKey[this._generateComparableKey(key)];
+  },
+
+  _updateSize: function() {
+    this.size = this._map.size;
   }
 };
 
-module.exports = gridCollider;
+module.exports = UniqueMap;
 
 
 /***/ })

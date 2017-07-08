@@ -1,5 +1,6 @@
 const gridCollider = require("./grid-collider");
 const Line = require("./line");
+const Enemy = require("./enemy");
 
 class Player {
   constructor(game, settings) {
@@ -24,15 +25,35 @@ class Player {
   }
 
   handleCollisions() {
-    this.handlePlayerCollisionsWithEnemies(this.c.entities.all(Enemy));
-    this.handleLineCollisionsWithEnemies(this.c.entities.all(Enemy));
+    this.dieIfHitEnemyWhenNotCharged(
+      this.game.c.entities.all(Enemy));
+    this.handlePlayerCollisionsWithEnemies(
+      this.game.c.entities.all(Enemy));
+    this.handleLineCollisionsWithEnemies(
+      this.game.c.entities.all(Enemy));
+  }
+
+  dieIfHitEnemyWhenNotCharged(enemies) {
+    if (!this._isCharged() &&
+        this._enemiesCollidingWith(enemies).length > 0) {
+      this.die();
+    }
   }
 
   handlePlayerCollisionsWithEnemies(enemies) {
-    enemies
-      .filter(enemy =>
-              gridCollider.isColliding(this.center, enemy.center))
+    this._enemiesCollidingWith(enemies)
       .forEach(enemy => enemy.die());
+  }
+
+  _enemiesCollidingWith(enemies) {
+    return enemies
+      .filter(enemy =>
+              gridCollider.isColliding(this.center, enemy.center));
+  }
+
+  _isCharged() {
+    const MIN_CHARGE_LINE_LENGTH = 5;
+    return this.line.size() >= MIN_CHARGE_LINE_LENGTH;
   }
 
   handleLineCollisionsWithEnemies(enemies) {

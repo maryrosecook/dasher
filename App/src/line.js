@@ -22,6 +22,10 @@ class Line {
     this.pointsMap.clear();
   }
 
+  size() {
+    return this.pointsMap.size;
+  }
+
   isCollidingWith(center) {
     return Array.from(this.pointsMap.keys())
       .filter(point => gridCollider.isColliding(point, center))
