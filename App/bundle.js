@@ -74,7 +74,7 @@ class Enemy {
   constructor(game, settings) {
     this.game = game;
     this.grid = settings.grid;
-    this.center = settings.center;
+    this.center = this._spawnPoint();
     this.direction = settings.direction;
     this.lastMoved = Date.now();
     this.moveEvery = 100 + Math.random() * 300;
