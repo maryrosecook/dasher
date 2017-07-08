@@ -1,5 +1,6 @@
-revert line never going away
+start player in middle
 
+revert line never going away
 make line never go away
 make player die when line is less than x points long
 make enemies destroy player when they hit the line

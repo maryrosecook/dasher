@@ -5,8 +5,8 @@ const Enemy = require("./enemy");
 class Player {
   constructor(game, settings) {
     this.game = game;
-    this.center = settings.center;
     this.grid = settings.grid;
+    this.center = this.grid.center();
     this.line = this.game.c.entities.create(Line, { grid: this.grid });
   }
 

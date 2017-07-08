@@ -36,6 +36,13 @@ Grid.prototype = {
     };
   },
 
+  center: function() {
+    return {
+      x: (this.squareSize.x * this.columns / 2) + this.squareSize.x / 2,
+      y: (this.squareSize.y * this.rows / 2) + this.squareSize.y / 2
+    };
+  },
+
   move: function(point, change) {
     return {
       x: point.x + change.x * this.squareSize.x,
