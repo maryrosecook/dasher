@@ -37,11 +37,24 @@ Grid.prototype = {
   },
 
   pointsAroundEdge: function() {
-    let top = [...Array(this.columns).keys()]
-        .map(i => { return { x: i * this.squareSize.x, y: 0 }; })
-        .map(this._offsetToCenter.bind(this));
-    return top;
+    return this._topSquares().concat(this._leftSquares());
+  },
 
+  _topSquares: function() {
+    return [...Array(this.columns).keys()]
+      .map(i => { return { x: i * this.squareSize.x, y: 0 }; })
+      .map(this._offsetToCenter.bind(this));
+  },
+
+  _leftSquares: function() {
+    return [...Array(this.columns).keys()]
+      .map(i => {
+        return {
+          x: 0,
+          y: this.squareSize.y * this.rows
+        };
+      })
+      .map(this._offsetToCenter.bind(this));
   },
 
   _offsetToCenter: function(point) {

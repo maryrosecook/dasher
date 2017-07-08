@@ -1,7 +1,5 @@
-spawn enemies at edge
-get list of all squares at edges
 
-
+spawn enemies at top and left
 stop enemies wrapping too high
 spawn enemies at top
 fix list of squares to actually be at top
