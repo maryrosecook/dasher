@@ -19,6 +19,8 @@ class Player {
       if (werePointsAdded) {
         this.center = this.line.lastPoint();
       }
+    } else {
+      this.line.clear();
     }
   }
 
