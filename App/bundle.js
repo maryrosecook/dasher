@@ -1144,8 +1144,6 @@ class Player {
       if (werePointsAdded) {
         this.center = this.line.lastPoint();
       }
-    } else {
-      this.line.clear();
     }
   }
 
@@ -1199,7 +1197,8 @@ class Player {
   }
 
   draw(screen) {
-    screen.fillStyle = "#69D2E7";
+    let color = this._isCharged() ? "#A7DBD8" : "#E0E4CC";
+    screen.fillStyle = color;
     screen.fillRect(this.center.x - this.grid.squareSize.x / 2,
                     this.center.y - this.grid.squareSize.y / 2,
                     this.grid.squareSize.x,
@@ -1395,7 +1394,7 @@ class Line {
   }
 
   draw(screen) {
-    screen.fillStyle = "#A7DBD8";
+    screen.fillStyle = "#E0E4CC";
     this.pointsMap.forEach((_, point) => {
       screen.fillRect(point.x - this.grid.squareSize.x / 2,
                       point.y - this.grid.squareSize.y / 2,

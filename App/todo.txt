@@ -1,5 +1,7 @@
-make player die when line is less than x points long
 
+
+make line never go away
+make player die when line is less than x points long
 make enemies destroy player when they hit the line
 refactor collider to take centers, not bodies
 let enemy destroy itself

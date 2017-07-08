@@ -69,7 +69,7 @@ class Line {
   }
 
   draw(screen) {
-    screen.fillStyle = "#A7DBD8";
+    screen.fillStyle = "#E0E4CC";
     this.pointsMap.forEach((_, point) => {
       screen.fillRect(point.x - this.grid.squareSize.x / 2,
                       point.y - this.grid.squareSize.y / 2,
