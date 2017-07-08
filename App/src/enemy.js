@@ -1,8 +1,8 @@
 class Enemy {
   constructor(game, settings) {
     this.game = game;
-    this.center = settings.center;
     this.grid = settings.grid;
+    this.center = this._spawnPoint();
     this.direction = settings.direction;
     this.lastMoved = Date.now();
     this.moveEvery = 100 + Math.random() * 300;
@@ -19,6 +19,14 @@ class Enemy {
 
   die() {
     this.game.c.entities.destroy(this);
+  }
+
+  _spawnPoint() {
+    return this._sample(this.grid.pointsAroundEdge());
+  }
+
+  _sample(array) {
+    return array[Math.floor(array.length * Math.random())];
   }
 
   _wrap() {

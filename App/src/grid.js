@@ -38,7 +38,8 @@ Grid.prototype = {
 
   pointsAroundEdge: function() {
     let top = [...Array(this.columns).keys()]
-        .map(i => { return this._offsetToCenter({ x: i, y: 0 }); });
+        .map(i => { return { x: i * this.squareSize.x, y: 0 }; })
+        .map(this._offsetToCenter.bind(this));
     return top;
 
   },

@@ -73,8 +73,8 @@
 class Enemy {
   constructor(game, settings) {
     this.game = game;
-    this.center = settings.center;
     this.grid = settings.grid;
+    this.center = this._spawnPoint();
     this.direction = settings.direction;
     this.lastMoved = Date.now();
     this.moveEvery = 100 + Math.random() * 300;
@@ -91,6 +91,14 @@ class Enemy {
 
   die() {
     this.game.c.entities.destroy(this);
+  }
+
+  _spawnPoint() {
+    return this._sample(this.grid.pointsAroundEdge());
+  }
+
+  _sample(array) {
+    return array[Math.floor(array.length * Math.random())];
   }
 
   _wrap() {
@@ -1110,7 +1118,8 @@ Grid.prototype = {
 
   pointsAroundEdge: function() {
     let top = [...Array(this.columns).keys()]
-        .map(i => { return this._offsetToCenter({ x: i, y: 0 }); });
+        .map(i => { return { x: i * this.squareSize.x, y: 0 }; })
+        .map(this._offsetToCenter.bind(this));
     return top;
 
   },
