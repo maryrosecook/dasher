@@ -1,5 +1,9 @@
-start player in middle
+spawn enemies at edge
+get list of all squares at edges
+spawn enemies at top
 
+get list of all squares at top
+start player in middle
 revert line never going away
 make line never go away
 make player die when line is less than x points long

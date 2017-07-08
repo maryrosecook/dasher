@@ -36,6 +36,20 @@ Grid.prototype = {
     };
   },
 
+  pointsAroundEdge: function() {
+    let top = [...Array(this.columns).keys()]
+        .map(i => { return this._offsetToCenter({ x: i, y: 0 }); });
+    return top;
+
+  },
+
+  _offsetToCenter: function(point) {
+    return {
+      x: point.x + this.squareSize.x / 2,
+      y: point.y + this.squareSize.y / 2
+    }
+  },
+
   center: function() {
     return {
       x: (this.squareSize.x * this.columns / 2) + this.squareSize.x / 2,
