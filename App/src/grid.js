@@ -2,7 +2,7 @@ function Grid(game, settings) {
   this.game = game;
   this.squareSize = { x: 98, y: 98 };
   this.columns = 10;
-  this.rows = 16;
+  this.rows = 18;
 };
 
 Grid.prototype = {
