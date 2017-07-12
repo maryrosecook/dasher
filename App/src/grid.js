@@ -36,10 +36,6 @@ Grid.prototype = {
     };
   },
 
-  pointsAroundEdge: function() {
-    return this._topSquares().concat(this._leftSquares());
-  },
-
   _topSquares: function() {
     return [...Array(this.columns).keys()]
       .map(i => { return { x: i * this.squareSize.x, y: 0 }; })

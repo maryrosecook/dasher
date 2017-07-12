@@ -2,8 +2,9 @@ class Enemy {
   constructor(game, settings) {
     this.game = game;
     this.grid = settings.grid;
+    this.lateral = this._lateral();
     this.center = this._spawnPoint();
-    this.direction = settings.direction;
+    this.direction = this._direction(settings);
     this.lastMoved = Date.now();
     this.moveEvery = 100 + Math.random() * 300;
   }
@@ -22,7 +23,24 @@ class Enemy {
   }
 
   _spawnPoint() {
-    return this._sample(this.grid.pointsAroundEdge());
+    if (this.lateral === "horizontal") {
+      return this._sample(this.grid._leftSquares());
+    } else if (this.lateral === "vertical") {
+      return this._sample(this.grid._topSquares());
+    }
+  }
+
+  _lateral() {
+    const LATERALS = ["horizontal", "vertical"];
+    return this._sample(LATERALS);
+  }
+
+  _direction() {
+    if (this.lateral === "horizontal") {
+      return this._sample([Enemy.LEFT, Enemy.RIGHT]);
+    } else if (this.lateral === "vertical") {
+      return this._sample([Enemy.UP, Enemy.DOWN]);
+    }
   }
 
   _sample(array) {
