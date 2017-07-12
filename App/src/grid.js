@@ -29,6 +29,10 @@ Grid.prototype = {
     return point.y < 0;
   },
 
+  isOffBottom: function(point) {
+    return point.y > this.squareSize.y * this.rows;
+  },
+
   moveToOffLeft: function(point) {
     return { x: this.squareSize.x / 2, y: point.y };
   },
@@ -37,6 +41,13 @@ Grid.prototype = {
     return {
       x: (this.squareSize.x * this.columns) - this.squareSize.x / 2,
       y: point.y
+    };
+  },
+
+  moveToOffTop: function(point) {
+    return {
+      x: point.x,
+      y: this.squareSize.y / 2
     };
   },
 

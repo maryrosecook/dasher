@@ -103,7 +103,7 @@ class Enemy {
   }
 
   _lateral() {
-    const LATERALS = ["horizontal"];
+    const LATERALS = ["horizontal", "vertical"];
     return this._sample(LATERALS);
   }
 
@@ -130,6 +130,10 @@ class Enemy {
 
     if (this.grid.isOffTop(this.center)) {
       this.center = this.grid.moveToOffBottom(this.center);
+    }
+
+    if (this.grid.isOffBottom(this.center)) {
+      this.center = this.grid.moveToOffTop(this.center);
     }
   }
 
@@ -1131,14 +1135,25 @@ Grid.prototype = {
     return point.y < 0;
   },
 
+  isOffBottom: function(point) {
+    return point.y > this.squareSize.y * this.rows;
+  },
+
   moveToOffLeft: function(point) {
-    return { x: -this.squareSize.x / 2, y: point.y };
+    return { x: this.squareSize.x / 2, y: point.y };
   },
 
   moveToOffRight: function(point) {
     return {
       x: (this.squareSize.x * this.columns) - this.squareSize.x / 2,
       y: point.y
+    };
+  },
+
+  moveToOffTop: function(point) {
+    return {
+      x: point.x,
+      y: this.squareSize.y / 2
     };
   },
 

@@ -1,4 +1,5 @@
 
+make enemies wrap bottom to top
 make enemies wrap left to right
 fix bug - no enemies moving right
 make enemies at left move horizontally and enemies at top move vertically

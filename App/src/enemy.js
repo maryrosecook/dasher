@@ -31,7 +31,7 @@ class Enemy {
   }
 
   _lateral() {
-    const LATERALS = ["horizontal"];
+    const LATERALS = ["horizontal", "vertical"];
     return this._sample(LATERALS);
   }
 
@@ -58,6 +58,10 @@ class Enemy {
 
     if (this.grid.isOffTop(this.center)) {
       this.center = this.grid.moveToOffBottom(this.center);
+    }
+
+    if (this.grid.isOffBottom(this.center)) {
+      this.center = this.grid.moveToOffTop(this.center);
     }
   }
 
