@@ -43,11 +43,11 @@ Grid.prototype = {
   },
 
   _leftSquares: function() {
-    return [...Array(this.columns).keys()]
+    return [...Array(this.rows).keys()]
       .map(i => {
         return {
           x: 0,
-          y: this.squareSize.y * this.rows
+          y: i * this.squareSize.y
         };
       })
       .map(this._offsetToCenter.bind(this));

@@ -103,7 +103,7 @@ class Enemy {
   }
 
   _lateral() {
-    const LATERALS = ["horizontal", "vertical"];
+    const LATERALS = ["horizontal"];
     return this._sample(LATERALS);
   }
 
@@ -1141,11 +1141,11 @@ Grid.prototype = {
   },
 
   _leftSquares: function() {
-    return [...Array(this.columns).keys()]
+    return [...Array(this.rows).keys()]
       .map(i => {
         return {
           x: 0,
-          y: this.squareSize.y * this.rows
+          y: i * this.squareSize.y
         };
       })
       .map(this._offsetToCenter.bind(this));

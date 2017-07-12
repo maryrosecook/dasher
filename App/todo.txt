@@ -1,4 +1,6 @@
+make enemies wrap left to right
 
+fix bug - no enemies moving right
 make enemies at left move horizontally and enemies at top move vertically
 randomly choose horiz/vertical on enemy creation
 spawn enemies at top and left

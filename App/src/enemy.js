@@ -31,7 +31,7 @@ class Enemy {
   }
 
   _lateral() {
-    const LATERALS = ["horizontal", "vertical"];
+    const LATERALS = ["horizontal"];
     return this._sample(LATERALS);
   }
 
