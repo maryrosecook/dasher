@@ -30,7 +30,7 @@ Grid.prototype = {
   },
 
   moveToOffLeft: function(point) {
-    return { x: -this.squareSize.x / 2, y: point.y };
+    return { x: this.squareSize.x / 2, y: point.y };
   },
 
   moveToOffRight: function(point) {
