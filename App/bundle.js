@@ -1142,12 +1142,7 @@ Grid.prototype = {
 
   _leftSquares: function() {
     return [...Array(this.rows).keys()]
-      .map(i => {
-        return {
-          x: 0,
-          y: i * this.squareSize.y
-        };
-      })
+      .map(i => { return { x: 0, y: i * this.squareSize.y }; })
       .map(this._offsetToCenter.bind(this));
   },
 
