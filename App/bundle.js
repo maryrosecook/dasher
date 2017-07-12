@@ -120,6 +120,10 @@ class Enemy {
   }
 
   _wrap() {
+    if (this.grid.isOffLeft(this.center)) {
+      this.center = this.grid.moveToOffRight(this.center);
+    }
+
     if (this.grid.isOffRight(this.center)) {
       this.center = this.grid.moveToOffLeft(this.center);
     }
@@ -1115,6 +1119,10 @@ Grid.prototype = {
     };
   },
 
+  isOffLeft: function(point) {
+    return point.x < 0;
+  },
+
   isOffRight: function(point) {
     return point.x > this.squareSize.x * this.columns;
   },
@@ -1125,6 +1133,13 @@ Grid.prototype = {
 
   moveToOffLeft: function(point) {
     return { x: -this.squareSize.x / 2, y: point.y };
+  },
+
+  moveToOffRight: function(point) {
+    return {
+      x: (this.squareSize.x * this.columns) - this.squareSize.x / 2,
+      y: point.y
+    };
   },
 
   moveToOffBottom: function(point) {

@@ -48,6 +48,10 @@ class Enemy {
   }
 
   _wrap() {
+    if (this.grid.isOffLeft(this.center)) {
+      this.center = this.grid.moveToOffRight(this.center);
+    }
+
     if (this.grid.isOffRight(this.center)) {
       this.center = this.grid.moveToOffLeft(this.center);
     }
